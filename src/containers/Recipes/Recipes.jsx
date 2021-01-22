@@ -2,8 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { API, Storage } from "aws-amplify";
 import { onError } from "../../libs/errorLib";
+import { s3Upload } from "../../libs/awsLib";
 import Form from "react-bootstrap/Form";
-import LoaderButton from "../LoaderButton/LoaderButton";
+import LoaderButton from "../../components/LoaderButton/LoaderButton";
 import config from "../../config";
 import "./Recipes.css";
 
@@ -52,6 +53,12 @@ export default function Recipes() {
     file.current = event.target.files[0];
   }
 
+  function saveNote(note) {
+    return API.put("recipes", `/item/${id}`, {
+      body: note,
+    });
+  }
+  
   async function handleSubmit(event) {
     let attachment;
 
@@ -67,20 +74,47 @@ export default function Recipes() {
     }
 
     setIsLoading(true);
+
+    try {
+      if (file.current) {
+        attachment = await s3Upload(file.current);
+      }
+
+      await saveNote({
+        content,
+        attachment: attachment || note.attachment,
+      });
+      history.push("/");
+    } catch (e) {
+      onError(e);
+      setIsLoading(false);
+    }
   }
 
+  function deleteNote() {
+    return API.del("recipes", `/item/${id}`);
+  }
+  
   async function handleDelete(event) {
     event.preventDefault();
-
+  
     const confirmed = window.confirm(
-      "Are you sure you want to delete this note?"
+      "Are you sure you want to delete this recipe?"
     );
-
+  
     if (!confirmed) {
       return;
     }
-
+  
     setIsDeleting(true);
+  
+    try {
+      await deleteNote();
+      history.push("/");
+    } catch (e) {
+      onError(e);
+      setIsDeleting(false);
+    }
   }
 
   return (

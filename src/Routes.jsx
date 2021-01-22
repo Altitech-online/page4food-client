@@ -1,30 +1,36 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
+import AuthenticatedRoute from "./components/Routes/AuthenticatedRoute";
+import UnauthenticatedRoute from "./components/Routes/UnauthenticatedRoute";
 import Home from "./containers/Home/Home";
 import NotFound from "./containers/NotFound/NotFound";
 import Login from "./containers/Login/Login";
 import Signup from "./containers/Signup/Signup";
 import NewRecipe from "./containers/NewRecipe/NewRecipe";
 import Recipes from "./containers/Recipes/Recipes";
+import Settings from "./containers/Settings/Settings";
 
 export default function Routes() {
   return (
     <Switch>
-      <Route exact path="/">
+      <UnauthenticatedRoute exact path="/">
         <Home />
-      </Route>
-      <Route exact path="/login">
+      </UnauthenticatedRoute>
+      <UnauthenticatedRoute exact path="/login">
         <Login />
-      </Route>
-      <Route exact path="/signup">
+      </UnauthenticatedRoute>
+      <UnauthenticatedRoute exact path="/signup">
         <Signup />
-      </Route>
-      <Route exact path="/recipes/new">
+      </UnauthenticatedRoute>
+      <AuthenticatedRoute exact path="/recipes/new">
         <NewRecipe />
-      </Route>
-      <Route exact path="/recipes/:id">
+      </AuthenticatedRoute>
+      <AuthenticatedRoute exact path="/recipes/:id">
         <Recipes />
-      </Route>
+      </AuthenticatedRoute>
+      <AuthenticatedRoute exact path="/settings">
+        <Settings />
+      </AuthenticatedRoute>
       <Route>
         <NotFound />
       </Route>

@@ -13,6 +13,7 @@ const config = {
     APP_CLIENT_ID: "pvib4g9beh08utp34ba4cr33k",
     IDENTITY_POOL_ID: "eu-west-2:b430aebf-1947-4933-b322-2ec8402922fb",
   },
+  STRIPE_KEY: "pk_test_WCjWwxR1tSH5qxpIHJNDyaid001t6m19Eo",
 };
 
 export default config;
