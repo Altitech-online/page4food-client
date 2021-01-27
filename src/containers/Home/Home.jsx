@@ -1,86 +1,106 @@
-import React, { useState, useEffect } from "react";
-import { API } from "aws-amplify";
+import { useState, useEffect } from "react";
+import { API, Storage } from "aws-amplify";
+import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import { Link } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";
-import { LinkContainer } from "react-router-bootstrap";
-import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../../libs/contextLib";
 import { onError } from "../../libs/errorLib";
-import "./Home.css";
+import { useStyles } from "../../libs/hooksLib";
 
 export default function Home() {
   const [notes, setNotes] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
+  const classes = useStyles();
+
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
         return;
       }
-  
+
       try {
         const notes = await loadNotes();
         setNotes(notes);
+        const mapUrls = notes.map(async (note, index) => {
+          notes[index].URL = note.attachment ?
+            await Storage.vault.get(note.attachment) : null
+        });
+        await Promise.all(mapUrls);
+        
       } catch (e) {
         onError(e);
       }
-  
+
       setIsLoading(false);
     }
-  
+
     onLoad();
   }, [isAuthenticated]);
-  
-  function loadNotes() {
+
+  const loadNotes = () => {
     return API.get("recipes", "/myitems");
-  }
+  };
 
-  function renderNotesList(notes) {
-    return (
-      <>
-        <LinkContainer to="/recipes/new">
-          <ListGroup.Item action className="py-3 text-nowrap text-truncate">
-            <BsPencilSquare size={17} />
-            <span className="ml-2 font-weight-bold">Create a new note</span>
-          </ListGroup.Item>
-        </LinkContainer>
-        {notes.map(({ recipeId, content, createdAt }) => (
-          <LinkContainer key={recipeId} to={`/recipes/${recipeId}`}>
-            <ListGroup.Item action>
-              <span className="font-weight-bold">
-                {content.trim().split("\n")[0]}
-              </span>
-              <br />
-              <span className="text-muted">
-                Created: {new Date(createdAt).toLocaleString()}
-              </span>
-            </ListGroup.Item>
-          </LinkContainer>
+  const renderNotesList = (notes) => (
+    <Container>
+      <Link to="/recipes/new">
+        <div className={classes.create}>
+          <BsPencilSquare size={17} />
+          <Typography component="h3" variant="h5">
+            Create a new stuff
+          </Typography>
+        </div>
+      </Link>
+      <GridList cellHeight={200} >
+        {notes.map(({ recipeId, content, createdAt, URL }) => (
+          <Link key={recipeId} to={`/recipes/${recipeId}`}>
+            <GridListTile cols={2}>
+              <GridListTileBar title={content.trim().split("\n")[0]} titlePosition="top">
+              
+    
+              </GridListTileBar>
+              {URL && (
+                <img src={URL} alt={URL} height={400} width={400}/>
+              )}
+            </GridListTile>
+          </Link>
         ))}
-      </>
-    );
-  }
-  
-  function renderLander() {
-    return (
-      <div className="lander">
-        <h1>Scratch</h1>
-        <p className="text-muted">A simple note taking app</p>
-      </div>
-    );
-  }
+      </GridList>
+    </Container>
+  );
 
-  function renderNotes() {
+  const renderLander = () => {
     return (
-      <div className="notes">
-        <h2 className="pb-3 mt-4 mb-3 border-bottom">Your Notes</h2>
-        <ListGroup>{!isLoading && renderNotesList(notes)}</ListGroup>
-      </div>
+      <Container>
+        <Typography component="h1" variant="h5">
+          Random serverless app
+        </Typography>
+        <Typography component="h3" variant="h5">
+          Will do something eventually
+        </Typography>
+      </Container>
     );
-  }
+  };
+
+  const renderNotes = () => {
+    return (
+      <Container>
+        <Typography component="h1" variant="h5">
+          Your stuff
+        </Typography>
+        <div>{!isLoading && renderNotesList(notes)}</div>
+      </Container>
+    );
+  };
 
   return (
-    <div className="Home">
+    <Container className={classes.content}>
       {isAuthenticated ? renderNotes() : renderLander()}
-    </div>
+    </Container>
   );
 }

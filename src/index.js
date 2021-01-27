@@ -5,8 +5,7 @@ import { Amplify } from 'aws-amplify';
 import './index.css';
 import App from './App';
 import config from './config';
-import reportWebVitals from './reportWebVitals';
-import registerServiceWorker from './registerServiceWorker';
+import reportWebVitals from "./reportWebVitals";
 
 Amplify.configure({
   Auth: {
@@ -45,4 +44,3 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-registerServiceWorker();

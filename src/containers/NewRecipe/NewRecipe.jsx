@@ -1,12 +1,11 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { API } from "aws-amplify";
-import Form from "react-bootstrap/Form";
 import { useHistory } from "react-router-dom";
 import LoaderButton from "../../components/LoaderButton/LoaderButton";
 import { onError } from "../../libs/errorLib";
 import { s3Upload } from "../../libs/awsLib";
 import config from "../../config";
-import "./NewRecipe.css";
+import { Group, Form, Label, Input } from "./styles";
 
 export default function NewRecipe() {
   const file = useRef(null);
@@ -56,22 +55,19 @@ export default function NewRecipe() {
   return (
     <div className="NewNote">
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="content">
-          <Form.Control
+        <Group>
+          <Input
             value={content}
             as="textarea"
             onChange={(e) => setContent(e.target.value)}
           />
-        </Form.Group>
-        <Form.Group controlId="file">
-          <Form.Label>Attachment</Form.Label>
-          <Form.Control onChange={handleFileChange} type="file" />
-        </Form.Group>
+        </Group>
+        <Group>
+          <Label>Attachment</Label>
+          <Input onChange={handleFileChange} type="file" />
+        </Group>
         <LoaderButton
-          block
           type="submit"
-          size="lg"
-          variant="primary"
           isLoading={isLoading}
           disabled={!validateForm()}
         >

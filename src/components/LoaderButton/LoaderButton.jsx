@@ -1,7 +1,7 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
+import { Spinner } from "./styles";
+import Button from "@material-ui/core/Button";
 import { BsArrowRepeat } from "react-icons/bs";
-import "./LoaderButton.css";
 
 export default function LoaderButton({
   isLoading,
@@ -13,9 +13,16 @@ export default function LoaderButton({
     <Button
       disabled={disabled || isLoading}
       className={`LoaderButton ${className}`}
+      fullWidth
+      variant="contained"
+      color="primary"
       {...props}
     >
-      {isLoading && <BsArrowRepeat className="spinning" />}
+      {isLoading && (
+        <Spinner>
+          <BsArrowRepeat />
+        </Spinner>
+      )}
       {props.children}
     </Button>
   );

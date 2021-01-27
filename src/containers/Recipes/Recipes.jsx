@@ -1,12 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { API, Storage } from "aws-amplify";
 import { onError } from "../../libs/errorLib";
 import { s3Upload } from "../../libs/awsLib";
-import Form from "react-bootstrap/Form";
 import LoaderButton from "../../components/LoaderButton/LoaderButton";
 import config from "../../config";
-import "./Recipes.css";
+import { Group, Form, Label, Input } from "./styles";
 
 export default function Recipes() {
   const file = useRef(null);
@@ -121,15 +120,15 @@ export default function Recipes() {
     <div className="Notes">
       {note && (
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="content">
-            <Form.Control
+          <Group controlId="content">
+            <Input
               as="textarea"
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
-          </Form.Group>
-          <Form.Group controlId="file">
-            <Form.Label>Attachment</Form.Label>
+          </Group>
+          <Group controlId="file">
+            <Label>Attachment</Label>
             {note.attachment && (
               <p>
                 <a
@@ -141,8 +140,8 @@ export default function Recipes() {
                 </a>
               </p>
             )}
-            <Form.Control onChange={handleFileChange} type="file" />
-          </Form.Group>
+            <Input onChange={handleFileChange} type="file" />
+          </Group>
           <LoaderButton
             block
             size="lg"

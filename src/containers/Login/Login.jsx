@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Auth } from "aws-amplify";
-import Form from "react-bootstrap/Form";
+import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
 import LoaderButton from "../../components/LoaderButton/LoaderButton";
+import { TextInput } from "../../components/Form/Form";
 import { useAppContext } from "../../libs/contextLib";
-import { useFormFields } from "../../libs/hooksLib";
 import { onError } from "../../libs/errorLib";
-import "./Login.css";
+import { useStyles } from "../../libs/hooksLib";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { userHasAuthenticated } = useAppContext();
-  const [fields, handleFieldChange] = useFormFields({
-    email: "",
-    password: "",
-  });
+  const classes = useStyles();
 
   function validateForm() {
-    return fields.email.length > 0 && fields.password.length > 0;
+    return email.length > 0 && password.length > 0;
   }
 
   async function handleSubmit(event) {
@@ -24,7 +24,7 @@ export default function Login() {
 
     try {
       setIsLoading(true);
-      await Auth.signIn(fields.email, fields.password);
+      await Auth.signIn(email, password);
       userHasAuthenticated(true);
     } catch (e) {
       onError(e);
@@ -33,35 +33,38 @@ export default function Login() {
   }
 
   return (
-    <div className="Login">
-      <Form onSubmit={handleSubmit}>
-        <Form.Group size="lg" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            autoFocus
-            type="email"
-            value={fields.email}
-            onChange={handleFieldChange}
-          />
-        </Form.Group>
-        <Form.Group size="lg" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={fields.password}
-            onChange={handleFieldChange}
-          />
-        </Form.Group>
+    <Container className={classes.paper} component="main" maxWidth="xs">
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <form onSubmit={handleSubmit} className={classes.form}>
+        <TextInput
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextInput
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <LoaderButton
-          block
-          size="lg"
           type="submit"
           isLoading={isLoading}
           disabled={!validateForm()}
+          className={classes.submit}
         >
           Login
         </LoaderButton>
-      </Form>
-    </div>
+      </form>
+    </Container>
   );
 }
